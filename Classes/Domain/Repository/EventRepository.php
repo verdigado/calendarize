@@ -67,15 +67,19 @@ class EventRepository extends AbstractRepository
 
     /**
      * @param $importId
+     * @param $pid
      *
      * @return mixed|null
      */
-    public function findOneByImportId($importId)
+    public function findOneByImportId($importId,$pid)
     {
         $query = $this->createQuery();
         $query->getQuerySettings()->setRespectStoragePage(false);
         $query->getQuerySettings()->setIgnoreEnableFields(true);
-        $query->matching($query->equals('importId', $importId));
+        $constraints = [];
+        $constraints[] = $query->equals('importId', $importId);
+        $constraints[] = $query->equals('pid', $pid);
+        $query->matching($query->logicalAnd($constraints));
         $result = $query->execute()->toArray();
 
         return $result[0] ?? null;

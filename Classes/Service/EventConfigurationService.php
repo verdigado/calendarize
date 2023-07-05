@@ -57,7 +57,7 @@ class EventConfigurationService extends AbstractService implements LoggerAwareIn
         string $importId,
         int $pid
     ): void {
-        $configuration = $this->getOrCreateConfiguration($calendarize, $importId);
+        $configuration = $this->getOrCreateConfiguration($calendarize, $importId, $pid);
 
         $configuration->setImportId($importId);
         $configuration->setPid($pid);
@@ -80,17 +80,18 @@ class EventConfigurationService extends AbstractService implements LoggerAwareIn
      *
      * @param ObjectStorage<Configuration> $calendarize
      * @param string                       $importId
+     * @param int                          $pid
      *
      * @return Configuration
      */
-    protected function getOrCreateConfiguration(ObjectStorage $calendarize, string $importId): Configuration
+    protected function getOrCreateConfiguration(ObjectStorage $calendarize, string $importId, int $pid): Configuration
     {
         $configuration = false;
         // Get existing configuration if it matches the importId
         if (0 !== $calendarize->count()) {
             foreach ($calendarize as $item) {
                 /** @var $item Configuration */
-                if ($item->getImportId() === $importId) {
+                if ($item->getImportId() === $importId && $item->getPid() === $pid) {
                     $configuration = $item;
                     break;
                 }
