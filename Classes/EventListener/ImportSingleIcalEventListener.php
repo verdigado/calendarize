@@ -37,7 +37,13 @@ class ImportSingleIcalEventListener
         $calEvent = $event->getEvent();
         $pid = $event->getPid();
 
-        $importId = \strlen($calEvent->getUid()) <= 100 ? $calEvent->getUid() : md5($calEvent->getUid());
+        $sequence = $calEvent->getRawData()['SEQUENCE'][0] ?? "";
+        $sequenceId = "/0";
+        if (!empty($sequence) and ((int) $sequence > 0))
+        {
+            $sequenceId = "/$sequence";
+        }
+        $importId = \strlen($calEvent->getUid() . $sequenceId) <= 100 ? $calEvent->getUid().$sequenceId : md5($calEvent->getUid().$sequenceId);
         $eventObj = $this->initializeEventRecord($importId);
         $this->hydrateEventRecord($eventObj, $calEvent, $pid);
 
