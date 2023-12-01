@@ -60,7 +60,12 @@ class ImportSingleIcalEventListener
         $calEvent = $event->getEvent();
         $pid = $event->getPid();
 
-        $importId = \strlen($calEvent->getUid()) <= 100 ? $calEvent->getUid() : md5($calEvent->getUid());
+        $recurrence = $calEvent->getRawData()['RECURRENCE-ID'][0] ?? "";
+        $recurrenceId = "";
+        if (!empty($recurrence)) {
+            $recurrenceId = preg_replace('#[^A-Za-z0-9=:\-/]#', '', $recurrence);
+        }
+        $importId = \strlen($calEvent->getUid() . $recurrenceId) <= 100 ? $calEvent->getUid().$recurrenceId : md5($calEvent->getUid().$recurrenceId);
         $eventObj = $this->initializeEventRecord($importId);
         $this->hydrateEventRecord($eventObj, $calEvent, $pid);
 
